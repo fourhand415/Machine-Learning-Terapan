@@ -130,9 +130,11 @@ Table diatas memberikan informasi statistik pada masing-masing kolom, antara lai
 
 Dengan 569 Baris data dengan 31 Jumlah Kolom
 
-### Exploratory Data Analysis - Missing Value & Outlier
+### Exploratory Data Analysis - Missing Value, Duplikasi Data, dan Outlier
 
-Dilakukan pengecekan Missing Value, Duplikasi data, dan Outlier. Langkah pertama adalah memeriksa data yang hilang pada setiap fitur. Jika ada nilai yang hilang pada fitur yang penting akan dilakukan imputasi dengan menggunakan mean atau median, namun jika yang hilang hanya sedikit maka akan dilakukan penghapusan pada data yang memiliki missing value.
+#### Penanganan Missing Value
+
+Langkah pertama adalah memeriksa data yang hilang pada setiap fitur. Jika ada nilai yang hilang pada fitur yang penting akan dilakukan imputasi dengan menggunakan mean atau median, namun jika yang hilang hanya sedikit maka akan dilakukan penghapusan pada data yang memiliki missing value.
 
 Pengecekan missing value menggunakan kode sebagai berikut.
   ```python
@@ -175,7 +177,103 @@ Hasil dari kode tersebut adalah sebagai berikut.
 | Symmetry_worst          |  0  |
 | Fractal_dimension_worst |  0  |
 
+Setelah dilakukan pengecekan missing value, pada dataset ini tidak memiliki missing value sehingga tidak perlu penanganan missing value.
 
+#### Penanganan Duplikasi Data
+
+Langkah kedua adalah melakukan pengecekan apakah ada data duplikasi di dalam dataset. Data duplikasi bisa terjadi akibat dari kesalahan saat input data atau pengumpulan data.
+
+Pengecekan duplikasi data menggunakan kode sebagai berikut.
+  ```python
+  # Cek duplikasi data
+  jumlah_duplikasi = df.duplicated().sum()
+  print(f"Jumlah duplikasi data: {jumlah_duplikasi}")
+  ```
+![jumlah_duplikasi](https://github.com/user-attachments/assets/db5c2c45-d5e8-4c04-aca0-3a078cf4ebcd)
+
+Dataset ini  memiliki 0 baris duplikasi. Karena tidak memiliki duplikasi data, maka tidak dilakukan penanganan duplikasi data.
+
+#### Penanganan Outlier
+
+Langkah terakhir adalah melakukan pengecekan outlier dengan menggunakan IQR, sebelum dilakukan IQR dilakukan pengecekan data melalui visualisasi boxplot dengan kode sebagai berikut.
+
+  ```python
+  # Cek Outlier
+  data_numerik = df.select_dtypes(include=['float'])
+  kolom_numerik = data_numerik.columns
+
+  for feature in kolom_numerik:
+    plt.figure(figsize=(10,6))
+    sns.boxplot(x=data_numerik[feature])
+    plt.title(f'Box Plot {feature}')
+    plt.show()
+  ```
+Karena ada 30 fitur numerik, diberikan 2 contoh Hasil Box Plot sebagai berikut.
+![Box Plot radius_mean](https://github.com/user-attachments/assets/48e0a98f-66b9-43c6-bb09-dfaa499bd5bb)
+![Box Plot texture_mean](https://github.com/user-attachments/assets/6bd7462c-be6c-44a2-b888-245bc6d5bb4d)
+Karena terlihat ada outlier yang ditunjukkan adanya titik data di luar box plot yang ada dilakukan dengan menggunakan IQR dengan code sebagai berikut.
+
+  ```python
+# Atasi Outlier
+Q1 = data_numerik[kolom_numerik].quantile(0.25)
+Q3 = data_numerik[kolom_numerik].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Mengganti nilai outlier dengan batas atas/bawah
+outlier_bersih = data_numerik
+for feature in kolom_numerik:
+    outlier_bersih[feature] = np.where(outlier_bersih[feature] < lower_bound[feature], lower_bound[feature], outlier_bersih[feature])
+    outlier_bersih[feature] = np.where(outlier_bersih[feature] > upper_bound[feature], upper_bound[feature], outlier_bersih[feature])
+
+
+for feature in outlier_bersih.columns:
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(x=outlier_bersih[feature])
+    plt.title(f'Box Plot {feature}')
+    plt.show()
+  ```
+Hasil penanganan outlier dengan menggunakan metode IQR ditunjukkan sebagai berikut.
+![Hasil penanganan outlier radius_mean](https://github.com/user-attachments/assets/ff3fb137-1daa-4490-b6ed-1a41de6b5c26)
+![Hasil penanganan outlier texture_mean](https://github.com/user-attachments/assets/f51fda7c-e4dd-4494-ab4d-c23b5a84ba7c)
+Hasil tersebut menunjukkan bahwa outlier telah teratasi. kemudian data yang telah dilakukan pengecekan missing value, duplikasi data, dan outlier akan bisa digunakan dengan baik.
+
+### Exploratory Data Analysis - Univariate Analysis
+Univariate Analysis ini bertujuan untuk memvisualisasikan setiap fitur secara individual dalam dataset. Sehingga dapat mengetahui informasi lebih mendalam pada masing-masing fitur.
+
+#### Univariate Analysis - Fitur Numerik
+![Histogram](https://github.com/user-attachments/assets/5d8118e6-c1ca-475c-9a8c-3e6cdb5cc611)
+Ini Penjelasan
+
+#### Univariate Analysis - Fitur Kategorik
+Pada dataset ini memiliki fitur kategorik yang juga menjadi label, sebelumnya dilakukan pelabelan manual dengan mapping, kode mapping adalah sebagai berikut.
+```python
+# Mapping kolom diagnosis
+# M = malignant, B = benign
+df.diagnosis = df.diagnosis.map({'M': 1, 'B': 0})
+df.head()
+```
+Kemudian dilakukan visualisasi untuk menghitung jumlah tiap variabel, kode dan hasil visualisasi adalah sebagai berikut.
+```python
+# Visualisasi Data Target
+df['diagnosis'] = df['diagnosis'].astype('category',copy=False)
+df['diagnosis'].value_counts().plot(kind='bar')
+```
+![Countplot kategori](https://github.com/user-attachments/assets/3aa304e3-ae8c-48a3-b96e-c324a1862975)
+Ini penjelasan
+
+### Exploratory Data Analysis - Multivariate Analysis
+```python
+# Korelasi Variabel Numerik
+data_numerik = df.select_dtypes(include=['float', 'int'])
+plt.figure(figsize=(12, 8))
+sns.heatmap(data_numerik.corr(), annot=True, cmap='coolwarm', fmt=".1f")
+plt.title('Korelasi Variabel')
+plt.show()
+```
+![Korelasi](https://github.com/user-attachments/assets/aeaafac9-66bb-447e-bb28-dfb0ff6af455)
 
 ## Data Preparation
 Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
