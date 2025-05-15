@@ -63,8 +63,119 @@ Untuk masing-masing dari sepuluh fitur dasar tersebut, dihitung tiga jenis nilai
 
 Dengan demikian, total terdapat 30 fitur numerik per sampel (10 fitur × 3 jenis pengukuran), yang seluruhnya telah dinormalisasi dengan presisi empat angka signifikan. Fitur-fitur ini menjadi masukan utama bagi model machine learning dalam melakukan klasifikasi antara tumor jinak dan ganas.
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Melakukan beberapa tahapan yang diperlukan untuk memahami data, contohnya teknik visualisasi data atau exploratory data analysis.
+### Exploratory Data Analysis - Deskripsi Variabel
+| #  | Column                  |Non-Null Count| Dtype    |
+|----|-------------------------|--------------|----------|
+| 0  | Diagnosis               | 569 non-null | object   |
+| 1  | Radius_mean             | 569 non-null | float64  |
+| 2  | Texture_mean            | 569 non-null | float64  |
+| 3  | Perimeter_mean          | 569 non-null | float64  |
+| 4  | Area_mean               | 569 non-null | float64  |
+| 5  | Smoothness_mean         | 569 non-null | float64  |
+| 6  | Compactness_mean        | 569 non-null | float64  |
+| 7  | Concavity_mean          | 569 non-null | float64  |
+| 8  | Concave points_mean     | 569 non-null | float64  |
+| 9  | Symmetry_mean           | 569 non-null | float64  |
+| 10 | Fractal_dimension_mean  | 569 non-null | float64  |
+| 11 | Radius_se               | 569 non-null | float64  |
+| 12 | Texture_se              | 569 non-null | float64  |
+| 13 | Perimeter_se            | 569 non-null | float64  |
+| 14 | Area_se                 | 569 non-null | float64  |
+| 15 | Smoothness_se           | 569 non-null | float64  |
+| 16 | Compactness_se          | 569 non-null | float64  |
+| 17 | Concavity_se            | 569 non-null | float64  |
+| 18 | Concave points_se       | 569 non-null | float64  |
+| 19 | Symmetry_se             | 569 non-null | float64  |
+| 20 | Fractal_dimension_se    | 569 non-null | float64  |
+| 21 | Radius_worst            | 569 non-null | float64  |
+| 22 | Texture_worst           | 569 non-null | float64  |
+| 23 | Perimeter_worst         | 569 non-null | float64  |
+| 24 | Area_worst              | 569 non-null | float64  |
+| 25 | Smoothness_worst        | 569 non-null | float64  |
+| 26 | Compactness_worst       | 569 non-null | float64  |
+| 27 | Concavity_worst         | 569 non-null | float64  |
+| 28 | Concave points_worst    | 569 non-null | float64  |
+| 29 | Symmetry_worst          | 569 non-null | float64  |
+| 30 | Fractal_dimension_worst | 569 non-null | float64  |
+
+Dari tabel tersebut didapatkan informasi bahwa :
+- Terdapat 1 fitur dengan kategori object yaitu Diagnosis, fitur ini juga menjadi target dalam proyek penelitian ini.
+- Terdapat 30 fitur dengan tipe numeric dengan 30 fiturnya bertipe float64.
+
+|         |radius_mean|texture_mean|perimeter_mean|area_mean  |smoothness_mean|compactness_mean|concavity_mean|concave points_mean|symmetry_mean|fractal_dimension_mean |radius_se |texture_se|perimeter_se|area_se    |smoothness_se|compactness_se|concavity_se|concave points_se|symmetry_se|fractal_dimension_se|radius_worst|texture_worst|perimeter_worst|area_worst  |smoothness_worst|compactness_worst|concavity_worst|concave points_worst|symmetry_worst|fractal_dimension_worst|
+|:-------:|:---------:|:----------:|:------------:|:---------:|:-------------:|:--------------:|:------------:|:-----------------:|:-----------:|:---------------------:|:--------:|:--------:|:----------:|:---------:|:-----------:|:------------:|:----------:|:---------------:|:---------:|:------------------:|:----------:|:-----------:|:-------------:|:----------:|:--------------:|:---------------:|:-------------:|:------------------:|:------------:|:---------------------:|
+| Count   |569.000000 |569.000000	 |569.000000	  |569.000000 |569.000000     |569.000000	     |569.000000    |569.000000         |569.000000   |569.000000         	  |569.000000|569.000000|569.000000  |569.000000 |569.000000   |569.000000    |569.000000  |569.000000    	 |569.000000 |569.000000          |569.000000  |569.000000	 |569.000000	   |569.000000  |569.000000      |569.000000	     |569.000000	   |569.000000          |569.000000    |569.000000	           |
+| Mean    |14.127292  |19.289649   |91.969033	    |654.889104 |0.096360	      |0.104341	       |0.088799	    |0.048919	          |0.181162	    |0.062798	              |0.405172	 |1.216853	|2.866059	   |40.337079	 |0.007041	   |0.025478	    |0.031894	   |0.011796	       |0.020542	 |0.003795	          |16.269190	 |25.677223	   |107.261213	   |880.583128  |0.132369	       |0.254265	       |0.272188	     |0.114606	          |0.290076	     |0.083946               |
+| Std     |3.524049   |4.301036    |24.298981	    |351.914129 |0.014064	      |0.052813	       |0.079720	    |0.038803	          |0.027414	    |0.007060	              |0.277313	 |0.551648	|2.021855	   |45.491006	 |0.003003	   |0.017908	    |0.030186	   |0.006170	       |0.008266	 |0.002646	          |4.833242	   |6.146258	   |33.602542	     |569.356993	|0.022832	       |0.157336	       |0.208624	     |0.065732	          |0.061867	     |0.018061               |
+| Min     |6.981000   |9.710000    |43.790000	    |143.500000 |0.052630	      |0.019380	       |0.000000	    |0.000000	          |0.106000	    |0.049960	              |0.111500	 |0.360200	|0.757000	   |6.802000	 |0.001713	   |0.002252	    |0.000000	   |0.000000	       |0.007882	 |0.000895	          |7.930000	   |12.020000	   |50.410000	     |185.200000	|0.071170	       |0.027290	       |0.000000	     |0.000000	          |0.156500	     |0.055040               |
+| 25%     |11.700000  |16.170000	 |75.170000	    |420.300000 |0.086370	      |0.064920	       |0.029560	    |0.020310	          |0.161900	    |0.057700	              |0.232400	 |0.833900	|1.606000    |17.850000	 |0.005169	   |0.013080	    |0.015090	   |0.007638	       |0.015160	 |0.002248	          |13.010000   |21.080000	   |84.110000	     |515.300000	|0.116600	       |0.147200	       |0.114500	     |0.064930	          |0.250400	     |0.071460               |
+| 50%     |13.370000  |18.840000   |86.240000	    |551.100000 |0.095870	      |0.092630	       |0.061540	    |0.033500	          |0.179200	    |0.061540	              |0.324200	 |1.108000	|2.287000	   |24.530000	 |0.006380	   |0.020450	    |0.025890	   |0.010930       	 |0.018730	 |0.003187	          |14.970000	 |25.410000	   |97.660000	     |686.500000	|0.131300	       |0.211900	       |0.226700	     |0.099930	          |0.282200	     |0.080040               |
+| 75%     |15.780000  |21.800000   |104.100000	  |782.700000 |0.105300	      |0.130400	       |0.130700	    |0.074000	          |0.195700	    |0.066120	              |0.478900	 |1.474000	|3.357000	   |45.190000	 |0.008146	   |0.032450	    |0.042050	   |0.014710	       |0.023480	 |0.004558	          |18.790000	 |29.720000	   |125.400000	   |1084.000000	|0.146000	       |0.339100	       |0.382900	     |0.161400	          |0.317900	     |0.092080               |
+| Max     |28.110000  |39.280000   |188.500000	  |2501.000000|0.163400	      |0.345400	       |0.426800	    |0.201200	          |0.304000	    |0.097440	              |2.873000	 |4.885000	|21.980000   |542.200000 |0.031130	   |0.135400	    |0.396000	   |0.052790	       |0.078950	 |0.029840	          |36.040000	 |49.540000	   |251.200000	   |4254.000000	|0.222600	       |1.058000	       |1.252000	     |0.291000	          |0.663800	     |0.207500               |
+
+Table diatas memberikan informasi statistik pada masing-masing kolom, antara lain:
+
+- Count adalah jumlah sampel pada data.
+- Mean adalah nilai rata-rata.
+- Std adalah standar deviasi.
+- Min yaitu nilai minimum setiap kolom.
+- 25% adalah kuartil pertama. Kuartil adalah nilai yang menandai batas interval - dalam empat bagian sebaran yang sama.
+- 50% adalah kuartil kedua, atau biasa juga disebut median (nilai tengah).
+- 75% adalah kuartil ketiga.
+- Max adalah nilai maksimum.
+
+| Jumlah Baris | Jumlah Kolom |
+|--------------|--------------|
+| 569          |31            |
+
+Dengan 569 Baris data dengan 31 Jumlah Kolom
+
+### Exploratory Data Analysis - Missing Value & Outlier
+
+Dilakukan pengecekan Missing Value, Duplikasi data, dan Outlier. Langkah pertama adalah memeriksa data yang hilang pada setiap fitur. Jika ada nilai yang hilang pada fitur yang penting akan dilakukan imputasi dengan menggunakan mean atau median, namun jika yang hilang hanya sedikit maka akan dilakukan penghapusan pada data yang memiliki missing value.
+
+Pengecekan missing value menggunakan kode sebagai berikut.
+  ```python
+  # Cek missing value
+  df.isnull().sum()
+  ```
+Hasil dari kode tersebut adalah sebagai berikut.
+
+| Column                  |Value|
+|-------------------------|-----|
+| Diagnosis               |  0  |
+| Radius_mean             |  0  |
+| Texture_mean            |  0  |
+| Perimeter_mean          |  0  |
+| Area_mean               |  0  |
+| Smoothness_mean         |  0  |
+| Compactness_mean        |  0  |
+| Concavity_mean          |  0  |
+| Concave points_mean     |  0  |
+| Symmetry_mean           |  0  |
+| Fractal_dimension_mean  |  0  |
+| Radius_se               |  0  |
+| Texture_se              |  0  |
+| Perimeter_se            |  0  |
+| Area_se                 |  0  |
+| Smoothness_se           |  0  |
+| Compactness_se          |  0  |
+| Concavity_se            |  0  |
+| Concave points_se       |  0  |
+| Symmetry_se             |  0  |
+| Fractal_dimension_se    |  0  |
+| Radius_worst            |  0  |
+| Texture_worst           |  0  |
+| Perimeter_worst         |  0  |
+| Area_worst              |  0  |
+| Smoothness_worst        |  0  |
+| Compactness_worst       |  0  |
+| Concavity_worst         |  0  |
+| Concave points_worst    |  0  |
+| Symmetry_worst          |  0  |
+| Fractal_dimension_worst |  0  |
+
+
 
 ## Data Preparation
 Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
