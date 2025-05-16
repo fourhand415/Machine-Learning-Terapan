@@ -33,15 +33,15 @@ Dataset ini memiliki 569 data dengan 30 fitur numerik yang berasal dari informas
 
 ### Informasi Datasets
 
-| Jenis | Keterangan |
-| ------ | ------ |
-| Title | Breast Cancer Wisconsin (Diagnostic) Data Set |
-| Source | [Kaggle](https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data) |
-| Owner | [UCI Machine Learning](https://www.kaggle.com/organizations/uciml)|
-| License | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)|
-| Visibility | Publik |
-| Tags | Cancer, Healthcare |
-| Usability | 8.53 |
+| Jenis      | Keterangan                                                                   |
+|------------|------------------------------------------------------------------------------|
+| Title      | Breast Cancer Wisconsin (Diagnostic) Data Set                                |
+| Source     | [Kaggle](https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data) |
+| Owner      | [UCI Machine Learning](https://www.kaggle.com/organizations/uciml)           |
+| License    | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)        |
+| Visibility | Publik                                                                       |
+| Tags       | Cancer, Healthcare                                                           |
+| Usability  | 8.53                                                                         |
 
 ### Variabel-variabel pada _Breast Cancer Wisconsin (Diagnostic) Data Set_
 Dataset ini berisi 30 fitur numerik yang dihasilkan dari citra inti sel kanker payudara, di mana setiap fitur merupakan hasil perhitungan terhadap karakteristik bentuk dan tekstur inti sel. Sepuluh jenis fitur dasar yang dihitung untuk setiap inti sel meliputi.
@@ -244,43 +244,112 @@ Hasil tersebut menunjukkan bahwa outlier telah teratasi. kemudian data yang tela
 Univariate Analysis ini bertujuan untuk memvisualisasikan setiap fitur secara individual dalam dataset. Sehingga dapat mengetahui informasi lebih mendalam pada masing-masing fitur.
 
 #### Univariate Analysis - Fitur Numerik
+Dilakukan visualisasi histogram untuk melihat bentuk distribusi dari fitur numerik, kode dan hasil visualisasi adalah sebagai berikut.
+```python
+# Histogram Variabel Numerik
+
+# Kolom Numerik
+kolom_numerik = df.select_dtypes(include=['float']).columns
+ 
+# Menentukan jumlah baris dan kolom untuk grid subplot
+n_cols = 3  # Jumlah kolom yang diinginkan
+n_rows = -(-len(kolom_numerik) // n_cols)  # Ceiling division untuk menentukan jumlah baris
+ 
+# Membuat subplot
+fig, axes = plt.subplots(n_rows, n_cols, figsize=(20, n_rows * 4))
+ 
+# Flatten axes array untuk memudahkan iterasi jika diperlukan
+axes = axes.flatten()
+ 
+# Plot setiap variabel
+for i, column in enumerate(kolom_numerik):
+    sns.histplot(df[column], ax=axes[i], bins=20, kde = True, edgecolor='black')
+    axes[i].set_title(column)
+    axes[i].set_xlabel('Value')
+    axes[i].set_ylabel('Frekuensi')
+ 
+# Menghapus subplot yang tidak terpakai (jika ada)
+for j in range(i + 1, len(axes)):
+    fig.delaxes(axes[j])
+ 
+# Menyesuaikan layout agar lebih rapi
+plt.tight_layout()
+plt.show()
+```
 ![Histogram](https://github.com/user-attachments/assets/5d8118e6-c1ca-475c-9a8c-3e6cdb5cc611)
 Ini Penjelasan
 
 #### Univariate Analysis - Fitur Kategorik
-Pada dataset ini memiliki fitur kategorik yang juga menjadi label, sebelumnya dilakukan pelabelan manual dengan mapping, kode mapping adalah sebagai berikut.
-```python
-# Mapping kolom diagnosis
-# M = malignant, B = benign
-df.diagnosis = df.diagnosis.map({'M': 1, 'B': 0})
-df.head()
-```
-Kemudian dilakukan visualisasi untuk menghitung jumlah tiap variabel, kode dan hasil visualisasi adalah sebagai berikut.
+Dilakukan visualisasi count plot untuk menghitung jumlah tiap variabel, kode dan hasil visualisasi adalah sebagai berikut.
 ```python
 # Visualisasi Data Target
 df['diagnosis'] = df['diagnosis'].astype('category',copy=False)
 df['diagnosis'].value_counts().plot(kind='bar')
 ```
-![Countplot kategori](https://github.com/user-attachments/assets/3aa304e3-ae8c-48a3-b96e-c324a1862975)
+![Countplot kategori](https://github.com/user-attachments/assets/bd77ca50-5f44-4ef7-b57d-a3738aa6ddf0)
 Ini penjelasan
 
 ### Exploratory Data Analysis - Multivariate Analysis
+Karena pada dataset ini hanya fitur numerik yang memiliki banyak fitur (30 fitur numerik), maka akan dilakukan korelasi untuk melihat hubungan antar fitur numerik, kode dan hasil visualisasi adalah sebagai berikut.
 ```python
 # Korelasi Variabel Numerik
-data_numerik = df.select_dtypes(include=['float', 'int'])
+data_numerik = df.select_dtypes(include=['float'])
 plt.figure(figsize=(12, 8))
 sns.heatmap(data_numerik.corr(), annot=True, cmap='coolwarm', fmt=".1f")
 plt.title('Korelasi Variabel')
 plt.show()
 ```
 ![Korelasi](https://github.com/user-attachments/assets/aeaafac9-66bb-447e-bb28-dfb0ff6af455)
+Ini penjelasan
 
 ## Data Preparation
-Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
+Pada bagian ini akan ada 3 tahap persiapan data yaitu.
+1. Encoding Fitur Kategori
+2. Memisahkan Target dan Fitur & Normalisasi Data
+3. Train Test Split
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan proses data preparation yang dilakukan
-- Menjelaskan alasan mengapa diperlukan tahapan data preparation tersebut.
+### Encoding Fitur Kategori
+Encoding dilakukan untuk mempermudah dalam perhitungan karena akan merubah dari kategorikal ke numerikal, pada dataset ini dilakukan mapping secara manual dengan kode sebagai berikut.
+```python
+# Mapping kolom diagnosis
+# M = malignant, B = benign
+df.diagnosis = df.diagnosis.map({'M': 1, 'B': 0})
+df.head()
+```
+Dari hasil ini akan merubah dari Malignant (M) menjadi 1 dan Benign menjadi 0.
+
+### Memisahkan Target dan Fitur & Normalisasi Data
+```python
+# Pisahkan Target dan Fitur
+X = df.drop(columns=['diagnosis'])
+y = df['diagnosis']
+```
+
+```python
+# Normalisasi Data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_scaled
+```
+
+![image](https://github.com/user-attachments/assets/2afadd27-e5c7-4022-a9be-083e987e49ab)
+
+### Train Test Split
+```python
+# Split Data
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+```
+
+```python
+print(f"Total sample di semua data: {len(X_scaled)}")
+print(f"Total sample di data train: {len(X_train)}")
+print(f"Total sample di data test: {len(X_test)}")
+```
+
+![image](https://github.com/user-attachments/assets/d571a991-9b91-4f53-a6b4-73ad8ce10672)
+
+
+
 
 ## Modeling
 Tahapan ini membahas mengenai model machine learning yang digunakan untuk menyelesaikan permasalahan. Anda perlu menjelaskan tahapan dan parameter yang digunakan pada proses pemodelan.
