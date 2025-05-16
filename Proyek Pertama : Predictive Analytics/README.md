@@ -277,7 +277,10 @@ plt.tight_layout()
 plt.show()
 ```
 ![Histogram](https://github.com/user-attachments/assets/5d8118e6-c1ca-475c-9a8c-3e6cdb5cc611)
-Ini Penjelasan
+
+Histogram digunakan untuk menampilkan frekuensi data dalam rentang nilai tertentu, ini juga memberikan gambaran bagaimana data tersebar, apakah simetris, miring ke kiri atau kanan, dan ada outlier atau tidak.
+
+Dari hasil histogram menunjukkan beberapa fitur seperti radius_mean, texture_mean, perimeter_mean, dan lain-lain cenderung memiliki distribusi yang miring ke kanan (positively skewed), artinya banyak nilai terkonsentrasi di bagian rendah dengan ekor panjang ke kanan. Kemudian juga ada fitur yang distribusinya lebih simetris dan mendekati normal, misalnya smoothness_mean dan symmetry_mean.
 
 #### Univariate Analysis - Fitur Kategorik
 Dilakukan visualisasi count plot untuk menghitung jumlah tiap variabel, kode dan hasil visualisasi adalah sebagai berikut.
@@ -287,7 +290,8 @@ df['diagnosis'] = df['diagnosis'].astype('category',copy=False)
 df['diagnosis'].value_counts().plot(kind='bar')
 ```
 ![Countplot kategori](https://github.com/user-attachments/assets/bd77ca50-5f44-4ef7-b57d-a3738aa6ddf0)
-Ini penjelasan
+Count plot digunakan untuk menghitung banyaknya setiap kategori dari suatu fitur, dari count plot yang ada menunjukkan bahwa Benign (B) menunjukkan lebih banyak daripada Malignant (M).
+
 
 ### Exploratory Data Analysis - Multivariate Analysis
 Karena pada dataset ini hanya fitur numerik yang memiliki banyak fitur (30 fitur numerik), maka akan dilakukan korelasi untuk melihat hubungan antar fitur numerik, kode dan hasil visualisasi adalah sebagai berikut.
@@ -300,7 +304,10 @@ plt.title('Korelasi Variabel')
 plt.show()
 ```
 ![Korelasi](https://github.com/user-attachments/assets/aeaafac9-66bb-447e-bb28-dfb0ff6af455)
-Ini penjelasan
+Heatmap Korelasi diatas menunjukkan hubungan antar fitur yang ada pada dataset. Jika memiliki nilai mendekati 1 fitur akan memiliki korelasi yang sangat kuat, jika semakin menjauhi 1 fitur akan memiliki korelasi yang lemah.
+
+Dari heatmap tersebut ada beberapa fitur seperti radius_mean, perimeter_mean, area_mean yang memiliki korelasi tinggi. dan fitur seperti fractal_dimension dan smoothness cenderung memiliki korelasi lebih rendah dengan fitur lainnya.
+
 
 ## Data Preparation
 Pada bagian ini akan ada 3 tahap persiapan data yaitu.
@@ -309,7 +316,7 @@ Pada bagian ini akan ada 3 tahap persiapan data yaitu.
 3. Train Test Split
 
 ### Encoding Fitur Kategori
-Encoding dilakukan untuk mempermudah dalam perhitungan karena akan merubah dari kategorikal ke numerikal, pada dataset ini dilakukan mapping secara manual dengan kode sebagai berikut.
+Encoding dilakukan untuk mempermudah dalam perhitungan karena akan merubah dari kategorikal ke numerikal dan algoritma machine learning tidak dapat langsung bekerja dengan data non-numerik. Pada dataset ini dilakukan mapping secara manual dengan kode sebagai berikut.
 ```python
 # Mapping kolom diagnosis
 # M = malignant, B = benign
@@ -333,6 +340,9 @@ X_scaled
 ```
 
 ![image](https://github.com/user-attachments/assets/2afadd27-e5c7-4022-a9be-083e987e49ab)
+Dilakukan pemisahan antara Target (y) yang merupakan diagnosis, dan Fitur (X) yaitu 30 fitur numerik lainnya.
+
+Setelah itu dilakukan normalisasi atau standarisasi dengan StandardScaler() pada 30 fitur numerik. Penggunaan StandardScaler() dalam machine learning sangat penting pada banyak model, terutama yang berbasis jarak atau yang mengandalkan asumsi distribusi data.
 
 ### Train Test Split
 ```python
@@ -347,17 +357,23 @@ print(f"Total sample di data test: {len(X_test)}")
 ```
 
 ![image](https://github.com/user-attachments/assets/d571a991-9b91-4f53-a6b4-73ad8ce10672)
+Selanjutnya, dilakukan train-test-split dengan pembagian data sebesar 80:20 antara data latih (train) dan data uji (test). Dari total 569 data, setelah dilakukan pembagian, data terbagi menjadi 455 untuk data latih dan 114 untuk data uji.
+
+**Jadi mengapa perlu dilakukan data prepration?**
+1. Dilakukan encoding fitur kategorik karena algoritma tidak akan bisa bekerja langsung dengan data non-numerik.
+2. Proses normalisasi/standarisasi karena dalam machine learning sangat penting terutama yang berbasis jarak atau yang mengandalkan asumsi distribusi data.
+3. Memisahkan data menjadi set pelatihan dan pengujian memungkinkan kita untuk mengevaluasi kinerja model pada data yang tidak pernah dilihat sebelumnya. 
 
 
 
 
 ## Modeling
-Tahapan ini membahas mengenai model machine learning yang digunakan untuk menyelesaikan permasalahan. Anda perlu menjelaskan tahapan dan parameter yang digunakan pada proses pemodelan.
+Pada tahap ini, beberapa algoritma machine learning digunakan untuk memecahkan masalah masalah ini, yaitu K-Nearest Neighbors (KNN), Support Vector Machine (SVM), dan Random Forest (RF).
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan kelebihan dan kekurangan dari setiap algoritma yang digunakan.
-- Jika menggunakan satu algoritma pada solution statement, lakukan proses improvement terhadap model dengan hyperparameter tuning. **Jelaskan proses improvement yang dilakukan**.
-- Jika menggunakan dua atau lebih algoritma pada solution statement, maka pilih model terbaik sebagai solusi. **Jelaskan mengapa memilih model tersebut sebagai model terbaik**.
+
+
+
+
 
 ## Evaluation
 Pada bagian ini anda perlu menyebutkan metrik evaluasi yang digunakan. Lalu anda perlu menjelaskan hasil proyek berdasarkan metrik evaluasi yang digunakan.
