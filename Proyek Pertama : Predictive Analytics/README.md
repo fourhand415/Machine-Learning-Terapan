@@ -357,6 +357,7 @@ print(f"Total sample di data test: {len(X_test)}")
 ```
 
 ![image](https://github.com/user-attachments/assets/d571a991-9b91-4f53-a6b4-73ad8ce10672)
+
 Selanjutnya, dilakukan train-test-split dengan pembagian data sebesar 80:20 antara data latih (train) dan data uji (test). Dari total 569 data, setelah dilakukan pembagian, data terbagi menjadi 455 untuk data latih dan 114 untuk data uji.
 
 **Jadi mengapa perlu dilakukan data prepration?**
@@ -370,8 +371,105 @@ Selanjutnya, dilakukan train-test-split dengan pembagian data sebesar 80:20 anta
 ## Modeling
 Pada tahap ini, beberapa algoritma machine learning digunakan untuk memecahkan masalah masalah ini, yaitu K-Nearest Neighbors (KNN), Support Vector Machine (SVM), dan Random Forest (RF).
 
+Pada tahap pertama digunakan model dasar pada 3 algoritma yang digunakan kemudian dilatih menggunakan parameter default dari masing-masing model. Kemudian data dilatih tanpa merubah apapun pada parameter model, ini berguna untuk mendapatkan performa dasar tanpa optimasi parameter pada setiap model.
+
+Seletah model dilatih, tahap kedua yang dilakukan adalah melakukan hyperparameter tuning untuk menemukan kombinasi dari parameter terbaik yang dapat meningkatkan kinerja model. Hyperparameter tuning yang digunakan adalah BayesSearchCV. BayesSearchCV dipilih karena menggunakan model probabilistik untuk memprediksi area yang lebih pasti, kemudian juga space nya lebih cepat dibandingkan GridSearchCV atau RandomizedSearchCV.
+
+Setelah kombinasi parameter terbaik telah ditemukan, model akan dibangun kembali dengan kombinasi yang baru dengan parameter terbaiknya, kemudian akan di uji kembali dengan mambandingkan apakah ada peningkatan performa dibandingkan dengan parameter default.
+
+Berikut merupakan penjelasan dari 3 model yang akan digunakan.
+
+1. K-Nearest Neighbors (KNN)
+   
+![KNN](https://github.com/user-attachments/assets/9687c920-2612-4175-96a1-00bef12e71cd)
+
+K-Nearest Neighbors adalah algoritma supervised learning yang digunakan untuk klasifikasi dan regresi. Untuk klasifikasi, model ini memprediksi kelas sebuah data uji berdasarkan kelas mayoritas dari K tetangga terdekatnya di data pelatihan [[4]](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html).
+
+Kode Pelatihan Model KNN adalah sebagai berikut.
+```python
+knn = KNeighborsClassifier().fit(X_train, y_train)
+```
+
+Cara Kerja pada K-Nearest Neighbors
+
+Tentukan nilai K (jumlah tetangga terdekat). Hitung jarak (misalnya Euclidean) antara data uji dan seluruh data pelatihan. Ambil K data pelatihan terdekat. Prediksi label berdasarkan kelas yang paling sering muncul di antara K tetangga tersebut.
+
+Kelebihan K-Nearest Neighbors
+- Sederhana dan intuitif.
+- Tidak memerlukan pelatihan eksplisit (lazy learning).
+- Dapat digunakan untuk klasifikasi dan regresi.
+
+Kekurangan K-Nearest Neighbors
+- Sensitif terhadap skala fitur (perlu normalisasi/standardisasi).
+- Tidak cocok untuk dataset besar (komputasi jarak bisa mahal).
+- Pemilihan K sangat memengaruhi performa.
+
+Parameter yang digunakan pada K-Nearest Neighbors
+| Parameter   | Penjelasan                                                                                     | Default                                                    |
+|-------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| n_neighbors | Jumlah tetangga terdekat yang dipertimbangkan (nilai K).                                       |int, default=5                                              |
+| weights     |	Bobot kontribusi tetangga. 'uniform' = setara, 'distance' = semakin dekat bobotnya lebih besar.|{‘uniform’, ‘distance’}, callable or None, default=’uniform’|
+| metric      |Fungsi jarak: default 'minkowski'. Bisa juga 'euclidean', 'manhattan', dll.                     |str or callable, default=’minkowski’                        |
+   
+2. Support Vector Machine (SVM)
+
+![SVM](https://github.com/user-attachments/assets/2b2da9dd-1f6d-48de-b3bb-3a963ca4e098)
+
+Support Vector Machine (SVM) adalah metode pembelajaran mesin yang digunakan untuk klasifikasi, regresi, dan deteksi outlier. Tujuan utama SVM dalam klasifikasi adalah menemukan hyperplane optimal yang memisahkan data dari dua kelas dengan margin maksimum [[5]](https://scikit-learn.org/stable/modules/svm.html).
+
+Kode Pelatihan Model SVM adalah sebagai berikut.
+```python
+svm = SVC().fit(X_train, y_train)
+```
+Cara Kerja pada Support Vector Machine
+
+SVM mencoba memisahkan kelas dengan hyperplane optimal dan margin maksimum. Untuk data non-linear, kernel digunakan untuk memetakan ke ruang fitur berdimensi lebih tinggi. 
+
+Kelebihan Support Vector Machine
+
+- Efektif di ruang dimensi tinggi – bekerja baik ketika jumlah fitur lebih banyak dari jumlah sampel.
+- Bekerja baik untuk margin yang jelas antara kelas.
+- Fleksibel dengan kernel trick – bisa digunakan untuk data non-linear menggunakan kernel (RBF, polynomial, dll).
+- Hemat memori – hanya menggunakan subset data training (support vectors).
+
+Kekurangan Support Vector Machine
+
+- Kurang efisien untuk dataset besar – karena waktu komputasi meningkat signifikan.
+- Pemilihan kernel dan parameter butuh tuning yang hati-hati.
+- Tidak cocok untuk data yang memiliki banyak noise atau overlap antar kelas.
+- Sulit diinterpretasikan – terutama dengan kernel non-linear.
+
+Parameter yang digunakan pada Support Vector Machine
 
 
+3. Random Forest (RF)
+
+![Random Forest](https://github.com/user-attachments/assets/1eb67822-57d4-445d-92b4-d6e20cf94403)
+
+Random Forest adalah metode ensemble learning berbasis pohon keputusan (decision tree) yang digunakan untuk klasifikasi dan regresi. Algoritma ini membangun banyak pohon keputusan selama proses pelatihan dan mengeluarkan kelas sebagai hasil prediksi berdasarkan mayoritas voting dari semua pohon (untuk klasifikasi) atau rata-rata (untuk regresi) [[6]](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html).
+
+Kode Pelatihan Model Random Forest adalah sebagai berikut.
+```python
+rf = RandomForestClassifier().fit(X_train, y_train)
+```
+Cara Kerja pada Random Forest
+
+Membuat banyak decision tree (default-nya 100). Kemudian setiap pohon dilatih menggunakan bootstrap sampling (subset acak dari data pelatihan dengan pengembalian). Pada setiap split, hanya subset acak dari fitur yang dipertimbangkan untuk memecah node — ini mengurangi korelasi antar pohon. Untuk klasifikasi, hasil akhir ditentukan berdasarkan voting terbanyak dari semua pohon.
+
+Kelebihan Random Forest
+
+- Robust terhadap overfitting, dibanding single decision tree.
+- Bisa menangani data besar dengan banyak fitur.
+- Dapat mengukur pentingnya fitur.
+- Cocok untuk data dengan kombinasi fitur numerik dan kategorikal.
+
+Kekurangan Random Forest
+
+- Kurang interpretatif – hasilnya seperti “black box”, sulit dipahami dibanding single decision tree.
+- Lambat saat prediksi pada data besar, karena harus menghitung hasil banyak pohon.
+- Model besar dan berat – konsumsi memori dan waktu tinggi untuk banyak data dan banyak pohon.
+
+Parameter yang digunakan pada Random Forest
 
 
 
@@ -393,5 +491,11 @@ Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, probl
 **[2]** M. T. T. B. Sirait, N. S. Fathonah, and M. N. Fauzan, “Pemanfaatan Algoritma ADASYN dan Support Vector Machine dalam Meningkatkan Akurasi Prediksi Kanker Paru-Paru,” JATI (Jurnal Mahasiswa Teknik Informatika), vol. 8, no. 5, pp. 8773–8778, 2024, doi: 10.36040/jati.v8i5.10752.
 
 **[3]** H. Asri, H. Mousannif, H. A. Moatassime, and T. Noel, “Using Machine Learning Algorithms for Breast Cancer Risk Prediction and Diagnosis,” *Procedia Computer Science*, vol. 83, pp. 1064–1069, 2015, doi: 10.1016/j.procs.2016.04.224.
+
+**[4]** Scikit-learn Developers, “sklearn.neighbors.KNeighborsClassifier,” Scikit-learn, 2024. [Online]. Available: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html. [Accessed: 17-May-2025].
+
+**[5]** Scikit-learn Developers, “Support Vector Machines,” Scikit-learn, 2024. [Online]. Available: https://scikit-learn.org/stable/modules/svm.html. [Accessed: 17-May-2025].
+
+**[6]** Scikit-learn Developers, “sklearn.ensemble.RandomForestClassifier,” Scikit-learn, 2024. [Online]. Available: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html. [Accessed: 17-May-2025].
 
 **---Ini adalah bagian akhir laporan---**
