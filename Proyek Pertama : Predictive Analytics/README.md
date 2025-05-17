@@ -409,7 +409,7 @@ Parameter yang digunakan pada K-Nearest Neighbors
 |-------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------|
 | n_neighbors | Jumlah tetangga terdekat yang dipertimbangkan (nilai K).                                       |int, default=5                                              |
 | weights     |	Bobot kontribusi tetangga. 'uniform' = setara, 'distance' = semakin dekat bobotnya lebih besar.|{‘uniform’, ‘distance’}, callable or None, default=’uniform’|
-| metric      |Fungsi jarak: default 'minkowski'. Bisa juga 'euclidean', 'manhattan', dll.                     |str or callable, default=’minkowski’                        |
+| metric      | Fungsi jarak: default 'minkowski'. Bisa juga 'euclidean', 'manhattan', dll.                    |str or callable, default=’minkowski’                        |
    
 2. Support Vector Machine (SVM)
 
@@ -440,7 +440,12 @@ Kekurangan Support Vector Machine
 - Sulit diinterpretasikan – terutama dengan kernel non-linear.
 
 Parameter yang digunakan pada Support Vector Machine
-
+| Parameter | Penjelasan                                                                                     | Default                                                                       |
+|-----------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| c         | Regularisasi. Semakin kecil, semakin lebar margin, tapi lebih banyak error.                    |float, default=1.0                                                             | 
+| gamma     |	Hanya untuk rbf, poly, sigmoid. Menentukan seberapa jauh pengaruh satu titik data.             |{‘scale’, ‘auto’} or float, default=’scale’                                    |
+| kernel    | Jenis fungsi kernel (linear, poly, rbf, sigmoid).                                              |{‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’} or callable, default=’rbf’ |
+  
 
 3. Random Forest (RF)
 
@@ -470,7 +475,138 @@ Kekurangan Random Forest
 - Model besar dan berat – konsumsi memori dan waktu tinggi untuk banyak data dan banyak pohon.
 
 Parameter yang digunakan pada Random Forest
+| Parameter         | Penjelasan                                                    | Default                                              |
+|-------------------|---------------------------------------------------------------|------------------------------------------------------|
+| n_estimators      | Jumlah pohon dalam hutan                                      |int, default=100                                      | 
+| max_depth         |	Kedalaman maksimum setiap pohon. Mencegah overfitting.        |int, default=None                                     |
+| min_samples_split | Jumlah minimum sampel yang dibutuhkan untuk split internal.   |int or float, default=2                               |
+| min_samples_leaf  | Minimum sampel pada daun. Menghindari daun kecil yang overfit.|int or float, default=1                               | 
+| max_features      | Jumlah fitur maksimum yang dipertimbangkan saat split.        |{“sqrt”, “log2”, None}, int or float, default=”sqrt”  |
 
+### Hasil Modeling
+
+Setelah dilakukan permodelan didapatkan hasil akurasi dari model menggunakan parameter default yaitu sebagai berikut.
+| Model                        | Akurasi |
+|------------------------------|---------|
+| K-Nearest Neighbors (KNN)    | 0.947368|
+| Support Vector Machine (SVM) | 0.973684|
+| Random Forest (RF)           | 0.964912|
+
+Kemudian dilakukan Hyperparameter Tuning dengan BayesSearchCV dengan kode sebagai berikut.
+```python
+# Definisikan parameter Bayesian untuk masing-masing model
+param_spaces = {
+    'KNN': {
+        'n_neighbors': Integer(1, 20),
+        'weights': Categorical(['uniform', 'distance']),
+        'metric': Categorical(['euclidean', 'manhattan', 'minkowski'])
+    },
+    'SVM': {
+        'C': Real(0.1, 10, prior='log-uniform'),
+        'kernel': Categorical(['linear', 'rbf', 'poly']),
+        'gamma': Categorical(['scale', 'auto'])
+    },
+    'RF': {
+        'n_estimators': Integer(50, 500),
+        'max_depth': Integer(5, 20),
+        'min_samples_split': Integer(2, 15),
+        'min_samples_leaf': Integer(1, 10),
+        'max_features': Categorical(['sqrt', 'log2', None])
+    }
+}
+
+# Definisikan model yang akan diuji
+models = {
+    'KNN': KNeighborsClassifier(),
+    'SVM': SVC(),
+    'RF': RandomForestClassifier()
+}
+
+# Dictionary untuk menyimpan hasil terbaik
+best_results = {}
+
+# Looping untuk setiap model
+for model_name, model in models.items():
+    print(f"Tuning {model_name} ...")
+    
+    bayes_search = BayesSearchCV(
+        model, 
+        param_spaces[model_name], 
+        n_iter=30,  # Jumlah iterasi pencarian
+        cv=5,  # 5-fold cross-validation
+        scoring='accuracy', 
+        n_jobs=-1, 
+        verbose=1, 
+        random_state=42
+    )
+    
+    bayes_search.fit(X_train, y_train)
+    
+    # Simpan hasil terbaik
+    best_model = bayes_search.best_estimator_
+    cv_scores = cross_val_score(best_model, X_train, y_train, cv=5)
+    test_score = best_model.score(X_test, y_test)
+    
+    # Analisis apakah overfitting, underfitting, atau fit
+    mean_cv_acc = cv_scores.mean()
+    
+    if mean_cv_acc > test_score + 0.02:
+        status = "Overfitting"
+    elif test_score > mean_cv_acc + 0.02:
+        status = "Underfitting"
+    else:
+        status = "Model fit dengan baik"
+    
+    best_results[model_name] = {
+        'Best Parameters': bayes_search.best_params_,
+        'CV Mean Accuracy': round(mean_cv_acc, 4),
+        'Testing Accuracy': round(test_score, 4),
+        'Status': status
+    }
+    
+    print(f"{model_name} Best Params: {bayes_search.best_params_}")
+    print(f"{model_name} CV Mean Accuracy: {mean_cv_acc:.4f}")
+    print(f"{model_name} Testing Accuracy: {test_score:.4f}")
+    print(f"{model_name} Status: {status}\n")
+
+# Tampilkan hasil akhir dalam DataFrame
+best_results_df = pd.DataFrame(best_results).T
+pd.options.display.max_colwidth = None
+print(best_results_df.to_string())
+```
+
+Hasil dari BayesSearchCV didapatkan Parameter Terbaik dari setiap model yang ditunjukkan sebagai berikut.
+
+| Model                        | Parameter Terbaik                                                                                            |
+|------------------------------|--------------------------------------------------------------------------------------------------------------|
+| K-Nearest Neighbors (KNN)    | {'metric': 'manhattan', 'n_neighbors': 4, 'weights': 'uniform'}                                              |
+| Support Vector Machine (SVM) | {'C': 0.2840604748514342, 'gamma': 'auto', 'kernel': 'linear'}                                               |
+| Random Forest (RF)           | {'max_depth': 20, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 50} |
+
+Kemudian akan dilakukan permodelan ulang menggunakan parameter terbaik dengan kode sebagai berikut.
+```python
+# Gunakan best params untuk setiap model dari hasil hyperparameter
+best_knn = KNeighborsClassifier(metric='manhattan', n_neighbors=4, weights='uniform')
+best_svm = SVC(C=0.2840604748514342, gamma='auto', kernel='linear')
+best_rf = RandomForestClassifier(max_depth=20, max_features='sqrt', 
+                                 min_samples_leaf=1, min_samples_split=2, 
+                                 n_estimators=50, random_state=42)
+
+# Latih ulang model dengan best params
+best_knn.fit(X_train, y_train)
+best_svm.fit(X_train, y_train)
+best_rf.fit(X_train, y_train)
+```
+
+Kemudian didapatkan hasil akurasi menggunakan parameter terbaik untuk setiap model sebagai berikut.
+
+| Model                        | Akurasi Setelah Tuning |
+|------------------------------|------------------------|
+| K-Nearest Neighbors (KNN)    | 0.95614                |
+| Support Vector Machine (SVM) | 0.973684               |
+| Random Forest (RF)           | 0.964912               |
+
+Hasil perbandingan Dari parameter default dan hasil tuning akan dijelaskan di bagian Evaluation.
 
 
 ## Evaluation
