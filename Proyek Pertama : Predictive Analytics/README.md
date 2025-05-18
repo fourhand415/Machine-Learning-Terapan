@@ -756,6 +756,43 @@ Ini mengindikasikan bahwa parameter default RF sudah cukup optimal, atau ruang p
 
 Random Forest tetap menjadi model yang kuat dan stabil, meskipun sedikit di bawah SVM.
 
+**Visualisasi Perbandingan setiap model sebelum dan sesudah Hyperparameter Tuning**
+
+![image](https://github.com/user-attachments/assets/25d3db17-3b8f-490e-8189-7449145394c6)
+
+## Kesimpulan
+
+Proyek ini bertujuan untuk membangun model klasifikasi yang mampu memprediksi diagnosis kanker payudara (Malignant atau Benign) berdasarkan data dari Breast Cancer Wisconsin (Diagnostic) Dataset. Proyek dimulai dengan eksplorasi awal dataset, dilanjutkan dengan pembersihan dan preprocessing data, eksplorasi statistik deskriptif, serta analisis visual berupa distribusi fitur dan korelasi antar variabel. Hasil visualisasi menunjukkan bahwa banyak fitur memiliki distribusi yang skewed (miring), dan beberapa fitur sangat berkorelasi satu sama lain, seperti radius_mean, perimeter_mean, dan area_mean.
+
+Langkah berikutnya adalah menerapkan algoritma machine learning untuk klasifikasi. Tiga algoritma dipilih untuk dibandingkan, yaitu:
+
+K-Nearest Neighbors (KNN)
+
+Support Vector Machine (SVM)
+
+Random Forest (RF)
+
+Ketiga model tersebut dievaluasi dengan menggunakan metrik Accuracy, Precision, Recall, dan F1-Score untuk memberikan gambaran performa yang menyeluruh. Selain itu, dilakukan juga proses standardisasi data (StandardScaler), terutama untuk model berbasis jarak seperti KNN dan SVM yang sensitif terhadap skala fitur.
+
+Hasil awal menunjukkan bahwa:
+
+SVM memberikan performa tertinggi, dengan akurasi dan metrik lainnya berada di kisaran 97.4%.
+
+Random Forest juga memberikan performa yang sangat baik dan stabil, dengan akurasi sekitar 96.5%, serta keseimbangan precision dan recall yang menunjukkan ketahanan terhadap overfitting.
+
+KNN memiliki performa yang baik (akurasi awal 94.7%) namun masih di bawah dua model lainnya.
+
+Kemudian dilakukan proses hyperparameter tuning untuk mengoptimalkan performa ketiga model tersebut. Hasil tuning menunjukkan bahwa:
+
+KNN mengalami peningkatan akurasi menjadi 95.6%, membuktikan bahwa performa model ini sangat tergantung pada parameter seperti jumlah tetangga (n_neighbors).
+
+SVM dan Random Forest tidak menunjukkan perubahan signifikan, yang mengindikasikan bahwa parameter default pada model tersebut sudah cukup optimal untuk dataset ini.
+
+Visualisasi hasil akurasi sebelum dan sesudah tuning ditampilkan melalui grafik batang (barplot), yang memperlihatkan perbandingan secara visual dan memudahkan interpretasi perbaikan performa model.
+
+Secara keseluruhan, proyek ini menunjukkan bahwa dengan proses yang terstruktur mulai dari exploratory data analysis, preprocessing, pemilihan model, tuning hyperparameter, hingga evaluasi menyeluruh, dapat dibangun model klasifikasi kanker payudara yang akurat. SVM dinyatakan sebagai model terbaik dalam studi ini, dengan performa tertinggi dan konsisten. Random Forest menjadi alternatif yang kuat, terutama karena ketahanannya terhadap noise dan kemampuan menangani data kompleks. KNN, meskipun lebih sederhana, menunjukkan potensi yang baik ketika dituning dengan benar.
+
+Proyek ini menegaskan pentingnya proses evaluasi menyeluruh dalam pemilihan model machine learning untuk tugas klasifikasi medis, di mana kesalahan prediksi dapat berdampak besar terhadap keputusan klinis. Model yang dikembangkan dapat digunakan sebagai dasar sistem pendukung keputusan untuk diagnosis kanker payudara, dengan potensi implementasi lebih lanjut pada sistem berbasis web atau aplikasi medis.
 
 
 ## Refrensi
