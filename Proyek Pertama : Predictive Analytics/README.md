@@ -610,16 +610,153 @@ Hasil perbandingan Dari parameter default dan hasil tuning akan dijelaskan di ba
 
 
 ## Evaluation
-Pada bagian ini anda perlu menyebutkan metrik evaluasi yang digunakan. Lalu anda perlu menjelaskan hasil proyek berdasarkan metrik evaluasi yang digunakan.
 
-Sebagai contoh, Anda memiih kasus klasifikasi dan menggunakan metrik **akurasi, precision, recall, dan F1 score**. Jelaskan mengenai beberapa hal berikut:
-- Penjelasan mengenai metrik yang digunakan
-- Menjelaskan hasil proyek berdasarkan metrik evaluasi
+Pada tahap ini, metrik evaluasi yang digunakan untuk mengukur performa model meliputi Akurasi, Precision, Recall, dan F1-Score. Metrik-metrik ini dipilih karena relevansi mereka dalam konteks masalah klasifikasi pada proyek ini. Penjelasan Metrik Evaluasi yang digunakan adalah sebagai berikut.
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
+1. Akurasi (Accuracy)
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+**Definisi**: Proporsi prediksi yang benar terhadap seluruh jumlah data.
+
+**Rumus**:
+
+$$
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+$$
+
+- **TP**: True Positive  
+- **TN**: True Negative  
+- **FP**: False Positive  
+- **FN**: False Negative
+
+### 2. Presisi (Precision)
+
+**Definisi**: Kemampuan model untuk mengklasifikasikan data positif dengan tepat.
+
+**Rumus**:
+
+$$
+\text{Precision} = \frac{TP}{TP + FP}
+$$
+
+
+### 3. Recall (Sensitivity)
+
+**Definisi**: Kemampuan model untuk menangkap seluruh data positif yang sebenarnya.
+
+**Rumus**:
+
+$$
+\text{Recall} = \frac{TP}{TP + FN}
+$$
+
+
+### 4. F1-Score
+
+**Definisi**: Rata-rata harmonik dari Precision dan Recall.
+
+**Rumus**:
+
+$$
+\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
+
+**Hasil Evaluasi:**
+
+Sebelum dilakukan Hyperparameter Tuning didapatkan hasil ringkasan metrik evaluasi untuk model yang diuji sebagai berikut.
+
+![image](https://github.com/user-attachments/assets/dff1964c-6dcb-421c-8db4-caf02e45009d)
+
+- **K-Nearest Neighbors (KNN)**
+  - Akurasi: 0.947368
+  - Precision: 0.947368
+  - Recall: 0.947368
+  - F1-Score: 0.947368
+
+Interpretasi:
+
+KNN memiliki performa yang stabil dan konsisten di seluruh metrik, menandakan bahwa model ini tidak terlalu condong ke salah satu jenis kesalahan (false positive atau false negative).
+
+Dengan nilai akurasi 94.7%, model ini tergolong baik namun masih kalah dibanding SVM dan RF.
+
+    
+- **Support Vector Machine (SVM)**
+  - Akurasi: 0.973684
+  - Precision: 0.973719
+  - Recall: 0.973684
+  - F1-Score: 0.973621
+
+Interpretasi:
+
+SVM menunjukkan performa terbaik di antara ketiga model.
+
+Dengan nilai akurasi, precision, recall, dan F1-score yang hampir identik dan tinggi (97.4%), model ini sangat seimbang dan efisien dalam memisahkan kelas-kelas data.
+
+SVM sangat baik ketika data tidak terlalu besar dan memiliki margin yang jelas antara kelas.
+
+- **Random Forest (RF)**   
+  - Akurasi: 0.964912
+  - Precision: 0.965205  
+  - Recall: 0.964912
+  - F1-Score: 0.964738
+
+Interpretasi:
+
+RF memiliki performa yang sangat baik dan stabil, sedikit di bawah SVM.
+
+Karena Random Forest merupakan ensemble dari banyak decision tree, model ini cenderung tahan terhadap overfitting dan bekerja baik pada data kompleks dan tidak linear.
+
+Nilai precision dan recall yang seimbang menunjukkan bahwa model ini tidak bias terhadap salah satu kelas.
+
+Kemudian dilakukan Hyperparameter tuning seperti pada modeling dan mendapatkan hasil ringkasan metrik evaluasi untuk model yang diuji sebagai berikut.
+
+![image](https://github.com/user-attachments/assets/6fa0edb0-8fc0-481f-817b-76fefa7dff1c)
+
+| K-Nearest Neighbors (KNN) | Sebelum Tuning | Setelah Tuning |
+|---------------------------|----------------|----------------|
+| Akurasi                   | 0.947368       | 0.95614        |
+| Precision                 | 0.947368       | 0.956088       |
+| Recall                    | 0.947368       | 0.95614        |
+| F1-Score                  | 0.947368       | 0.956036       |
+
+Interpretasi:
+
+Setelah tuning, semua metrik mengalami peningkatan.
+
+Ini menunjukkan bahwa pemilihan parameter yang optimal (seperti jumlah tetangga n_neighbors) berdampak signifikan terhadap performa model.
+
+Model KNN menjadi lebih akurat dan konsisten, meskipun masih belum menyamai performa SVM.
+
+| Support Vector Machine (SVM) | Sebelum Tuning | Setelah Tuning |
+|------------------------------|----------------|----------------|
+| Akurasi                      | 0.973684       | 0.973684       |
+| Precision                    | 0.973719       | 0.973719       |
+| Recall                       | 0.973684       | 0.973684       |
+| F1-Score                     | 0.973621       | 0.973621       |
+
+Interpretasi:
+
+Tidak ada perubahan pada performa model sebelum dan sesudah tuning.
+
+Hal ini menunjukkan bahwa parameter default dari SVM sudah sangat optimal untuk dataset ini, atau tuning tidak menemukan kombinasi yang lebih baik.
+
+SVM tetap menjadi model dengan performansi terbaik di antara ketiganya.
+
+| Random Forest (RF) | Sebelum Tuning | Setelah Tuning |
+|--------------------|----------------|----------------|
+| Akurasi            | 0.964912       | 0.964912       |
+| Precision          | 0.965205       | 0.965205       |
+| Recall             | 0.964912       | 0.964912       |
+| F1-Score           | 0.964738       | 0.964738       |
+
+Interpretasi:
+
+Sama seperti SVM, tuning tidak memberikan peningkatan performa pada model RF.
+
+Ini mengindikasikan bahwa parameter default RF sudah cukup optimal, atau ruang parameter tuning belum cukup luas untuk meningkatkan performa.
+
+Random Forest tetap menjadi model yang kuat dan stabil, meskipun sedikit di bawah SVM.
+
+
 
 ## Refrensi
 **[1]** World Health Organization, “Breast cancer,” *WHO*, 2024. [Online]. Available: https://www.who.int/news-room/fact-sheets/detail/breast-cancer. [Accessed: May 14, 2025].
