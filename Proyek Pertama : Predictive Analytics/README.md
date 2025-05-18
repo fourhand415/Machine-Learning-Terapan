@@ -29,8 +29,6 @@ Berdasarkan tujuan yang telah dipaparkan, maka penelitian ini memiliki solusi se
 
 Dataset yang digunakan dalam proyek ini adalah _Breast Cancer Wisconsin (Diagnostic) Data Set_ yang tersedia di [Kaggle](https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data). Dataset ini awalnya berasal dari UCI Machine Learning Repository dan digunakan secara luas dalam berbagai studi dan eksperimen klasifikasi medis, khususnya dalam mendeteksi tumor payudara.
 
-Dataset ini memiliki 569 data dengan 30 fitur numerik yang berasal dari informasi diagnostik citologi aspirasi jarum halus (Fine Needle Aspiration, FNA) pada massa payudara. Dataset ini memiliki label target yang terdiri dari dua kelas yaitu M (Malignant) dan B (Benign), yang menunjukkan apakah tumor bersifat ganas atau jinak.
-
 ### Informasi Datasets
 
 | Jenis      | Keterangan                                                                   |
@@ -43,27 +41,129 @@ Dataset ini memiliki 569 data dengan 30 fitur numerik yang berasal dari informas
 | Tags       | Cancer, Healthcare                                                           |
 | Usability  | 8.53                                                                         |
 
-### Variabel-variabel pada _Breast Cancer Wisconsin (Diagnostic) Data Set_
-Dataset ini berisi 30 fitur numerik yang dihasilkan dari citra inti sel kanker payudara, di mana setiap fitur merupakan hasil perhitungan terhadap karakteristik bentuk dan tekstur inti sel. Sepuluh jenis fitur dasar yang dihitung untuk setiap inti sel meliputi.
-1. **Radius** : rata-rata jarak dari pusat inti ke titik-titik pada perimeter.
-2. **Texture** : simpangan baku dari nilai intensitas skala abu-abu.
-3. **Perimeter** : panjang keliling inti sel.
-4. **Area** : luas permukaan inti sel.
-5. **Smoothness** : variasi lokal panjang radius, menunjukkan seberapa halus bentuk tepi.
-6. **Compactness** : dihitung sebagai (perimeter² / area − 1.0), menggambarkan seberapa padat bentuk inti.
-7. **Concavity** : tingkat lekukan cekung pada kontur inti.
-8. **Concave Points** : jumlah titik-titik cekung di sepanjang kontur.
-9. **Symmetry** : tingkat simetri bentuk inti.
-10. **Fractal Dimension** : pendekatan dimensi fraktal dengan metode “coastline approximation”, mengukur kompleksitas kontur.
+### Variabel-variabel pada *Breast Cancer Wisconsin (Diagnostic) Data Set*
 
-Untuk masing-masing dari sepuluh fitur dasar tersebut, dihitung tiga jenis nilai statistik yaitu.
-1. **Mean** : rata-rata nilai dari seluruh piksel atau elemen pengukur.
-2. **Standard Error (SE)** : simpangan baku dari nilai-nilai dalam pengukuran, menunjukkan seberapa stabil nilai tersebut.
-3. **Worst** : rata-rata dari tiga nilai tertinggi pada masing-masing fitur.
+Dataset ini berisi **569 entri** dan **30 fitur numerik utama** yang dihasilkan dari citra digital inti sel kanker payudara. Masing-masing fitur dianalisis dalam tiga kelompok statistik: nilai rata-rata (*mean*), simpangan baku (*standard error/se*), dan nilai terburuk (*worst*) untuk setiap gambar. Variabel-variabel tersebut dijelaskan sebagai berikut:
 
-Dengan demikian, total terdapat 30 fitur numerik per sampel (10 fitur × 3 jenis pengukuran), yang seluruhnya telah dinormalisasi dengan presisi empat angka signifikan. Fitur-fitur ini menjadi masukan utama bagi model machine learning dalam melakukan klasifikasi antara tumor jinak dan ganas.
+#### Variabel Umum
+- **id** : Nomor identifikasi unik untuk setiap sampel (tidak digunakan dalam analisis).
+- **diagnosis** : Hasil diagnosis — terdiri dari dua kelas:
+  - `M` = Malignant (ganas)
+  - `B` = Benign (jinak)
+
+#### Sepuluh Fitur Dasar Citra Inti Sel
+1. **Radius** : Jarak rata-rata dari pusat ke perimeter inti sel.
+2. **Texture** : Simpangan baku dari nilai intensitas skala abu-abu pada inti.
+3. **Perimeter** : Panjang keliling inti sel.
+4. **Area** : Luas dari inti sel.
+5. **Smoothness** : Variasi lokal panjang radius, menunjukkan kehalusan tepi inti.
+6. **Compactness** : Dihitung sebagai (perimeter² / area − 1.0), menunjukkan kerapatan bentuk.
+7. **Concavity** : Derajat lekukan cekung dari bentuk inti.
+8. **Concave Points** : Jumlah titik-titik cekung di kontur inti.
+9. **Symmetry** : Tingkat simetri inti sel.
+10. **Fractal Dimension** : Pendekatan dimensi fraktal pada kontur, mengukur kompleksitas bentuk.
+
+#### Kelompok Variabel Berdasarkan Ukuran Statistik
+
+| Kelompok Statistik         | Variabel                                                                                                                                                                                           |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Mean** (rata-rata)       | `radius_mean`, `texture_mean`, `perimeter_mean`, `area_mean`, `smoothness_mean`, `compactness_mean`, `concavity_mean`, `concave points_mean`, `symmetry_mean`, `fractal_dimension_mean`            |
+| **SE (Standard Error)**    | `radius_se`, `texture_se`, `perimeter_se`, `area_se`, `smoothness_se`, `compactness_se`, `concavity_se`, `concave points_se`, `symmetry_se`, `fractal_dimension_se`                                |
+| **Worst** (nilai maksimum) | `radius_worst`, `texture_worst`, `perimeter_worst`, `area_worst`, `smoothness_worst`, `compactness_worst`, `concavity_worst`, `concave points_worst`, `symmetry_worst`, `fractal_dimension_worst`  |
+
+#### Variabel Tambahan
+- **Unnamed: 32** : Kolom kosong tanpa data (semua bernilai NaN), bisa dihapus dari dataset karena tidak memberikan informasi.
+
+### Penjelasan Setiap Variabel Berdasarkan Informasi Awal pada Dataset
+
+1. **id** – Nomor identifikasi unik untuk setiap sampel pasien.
+2. **diagnosis** – Hasil diagnosis kanker: M (Malignant = ganas), B (Benign = jinak).
+3. **radius_mean** – Rata-rata jarak dari pusat ke tepi inti sel.
+4. **texture_mean** – Rata-rata dari intensitas skala abu-abu inti sel (tekstur).
+5. **perimeter_mean** – Rata-rata panjang keliling inti sel.
+6. **area_mean** – Rata-rata luas dari inti sel.
+7. **smoothness_mean** – Rata-rata variasi lokal pada radius inti (kehalusan tepi).
+8. **compactness_mean** – Rata-rata kerapatan inti, dihitung dari (perimeter² / area − 1.0).
+9. **concavity_mean** – Rata-rata tingkat lekukan cekung pada kontur inti sel.
+10. **concave points_mean** – Rata-rata jumlah titik-titik cekung pada kontur inti sel.
+11. **symmetry_mean** – Rata-rata simetri bentuk inti sel.
+12. **fractal_dimension_mean** – Pendekatan dimensi fraktal dari bentuk inti, rata-rata.
+13. **radius_se** – Simpangan baku dari radius inti sel.
+14. **texture_se** – Simpangan baku dari tekstur inti sel.
+15. **perimeter_se** – Simpangan baku dari perimeter inti sel.
+16. **area_se** – Simpangan baku dari luas inti sel.
+17. **smoothness_se** – Simpangan baku dari kehalusan kontur inti sel.
+18. **compactness_se** – Simpangan baku dari kerapatan bentuk inti sel.
+19. **concavity_se** – Simpangan baku dari lekukan cekung kontur inti sel.
+20. **concave points_se** – Simpangan baku dari jumlah titik cekung kontur.
+21. **symmetry_se** – Simpangan baku dari simetri bentuk inti sel.
+22. **fractal_dimension_se** – Simpangan baku dari dimensi fraktal kontur inti sel.
+23. **radius_worst** – Nilai terburuk (worst) dari radius inti sel.
+24. **texture_worst** – Nilai terburuk (worst) dari tekstur inti sel.
+25. **perimeter_worst** – Nilai terburuk (worst) dari perimeter inti sel.
+26. **area_worst** – Nilai terburuk (worst) dari luas inti sel.
+27. **smoothness_worst** – Nilai terburuk (worst) dari kehalusan kontur inti sel.
+28. **compactness_worst** – Nilai terburuk (worst) dari kerapatan bentuk inti sel.
+29. **concavity_worst** – Nilai terburuk (worst) dari lekukan cekung kontur inti sel.
+30. **concave points_worst** – Nilai terburuk (worst) dari jumlah titik cekung kontur inti sel.
+31. **symmetry_worst** – Nilai terburuk (worst) dari simetri bentuk inti sel.
+32. **fractal_dimension_worst** – Nilai terburuk (worst) dari dimensi fraktal kontur inti sel.
+33. **Unnamed: 32** – Kolom kosong tanpa informasi (semua nilai NaN), dapat dihapus.
 
 ### Exploratory Data Analysis - Deskripsi Variabel
+
+Karena dapat dilihat ada 2 Variable / Fitur yang tidak akan digunakan dalam perhitungan maka dari yang awalnya saat melihat informasi data seperti dibawah ini.
+
+| #  | Column                    | Non-Null Count | Dtype   |
+| -- | ------------------------- | -------------- | ------- |
+| 0  | id                        | 569 non-null   | int64   |
+| 1  | diagnosis                 | 569 non-null   | object  |
+| 2  | radius_mean               | 569 non-null   | float64 |
+| 3  | texture_mean              | 569 non-null   | float64 |
+| 4  | perimeter_mean            | 569 non-null   | float64 |
+| 5  | area_mean                 | 569 non-null   | float64 |
+| 6  | smoothness_mean           | 569 non-null   | float64 |
+| 7  | compactness_mean          | 569 non-null   | float64 |
+| 8  | concavity_mean            | 569 non-null   | float64 |
+| 9  | concave points_mean       | 569 non-null   | float64 |
+| 10 | symmetry_mean             | 569 non-null   | float64 |
+| 11 | fractal_dimension_mean    | 569 non-null   | float64 |
+| 12 | radius_se                 | 569 non-null   | float64 |
+| 13 | texture_se                | 569 non-null   | float64 |
+| 14 | perimeter_se              | 569 non-null   | float64 |
+| 15 | area_se                   | 569 non-null   | float64 |
+| 16 | smoothness_se             | 569 non-null   | float64 |
+| 17 | compactness_se            | 569 non-null   | float64 |
+| 18 | concavity_se              | 569 non-null   | float64 |
+| 19 | concave points_se         | 569 non-null   | float64 |
+| 20 | symmetry_se               | 569 non-null   | float64 |
+| 21 | fractal_dimension_se      | 569 non-null   | float64 |
+| 22 | radius_worst              | 569 non-null   | float64 |
+| 23 | texture_worst             | 569 non-null   | float64 |
+| 24 | perimeter_worst           | 569 non-null   | float64 |
+| 25 | area_worst                | 569 non-null   | float64 |
+| 26 | smoothness_worst          | 569 non-null   | float64 |
+| 27 | compactness_worst         | 569 non-null   | float64 |
+| 28 | concavity_worst           | 569 non-null   | float64 |
+| 29 | concave points_worst      | 569 non-null   | float64 |
+| 30 | symmetry_worst            | 569 non-null   | float64 |
+| 31 | fractal_dimension_worst   | 569 non-null   | float64 |
+| 32 | Unnamed: 32               | 0 non-null     | float64 |
+
+Dengan informasi baris dan kolom adalah sebagai berikut.
+
+| Jumlah Baris | Jumlah Kolom |
+|--------------|--------------|
+| 569          |33            |
+
+Dengan menggunakan kode dibawah ini
+```python
+# Drop unussed columns
+df.drop(columns=['Unnamed: 32', 'id'], inplace=True)
+df.head()
+```
+Akan menjadi seperti dibawah ini saat melihat infomasi dari data
+
 | #  | Column                  |Non-Null Count| Dtype    |
 |----|-------------------------|--------------|----------|
 | 0  | Diagnosis               | 569 non-null | object   |
@@ -98,9 +198,16 @@ Dengan demikian, total terdapat 30 fitur numerik per sampel (10 fitur × 3 jenis
 | 29 | Symmetry_worst          | 569 non-null | float64  |
 | 30 | Fractal_dimension_worst | 569 non-null | float64  |
 
-Dari tabel tersebut didapatkan informasi bahwa :
+Dari tabel data yang telah dibersihkan dari fitur yang tidak digunakan tersebut didapatkan informasi bahwa :
 - Terdapat 1 fitur dengan kategori object yaitu Diagnosis, fitur ini juga menjadi target dalam proyek penelitian ini.
 - Terdapat 30 fitur dengan tipe numeric dengan 30 fiturnya bertipe float64.
+
+| Jumlah Baris | Jumlah Kolom |
+|--------------|--------------|
+| 569          |31            |
+
+Dengan 569 Baris data dengan 31 Jumlah Kolom
+
 
 |         |radius_mean|texture_mean|perimeter_mean|area_mean  |smoothness_mean|compactness_mean|concavity_mean|concave points_mean|symmetry_mean|fractal_dimension_mean |radius_se |texture_se|perimeter_se|area_se    |smoothness_se|compactness_se|concavity_se|concave points_se|symmetry_se|fractal_dimension_se|radius_worst|texture_worst|perimeter_worst|area_worst  |smoothness_worst|compactness_worst|concavity_worst|concave points_worst|symmetry_worst|fractal_dimension_worst|
 |:-------:|:---------:|:----------:|:------------:|:---------:|:-------------:|:--------------:|:------------:|:-----------------:|:-----------:|:---------------------:|:--------:|:--------:|:----------:|:---------:|:-----------:|:------------:|:----------:|:---------------:|:---------:|:------------------:|:----------:|:-----------:|:-------------:|:----------:|:--------------:|:---------------:|:-------------:|:------------------:|:------------:|:---------------------:|
@@ -123,12 +230,6 @@ Table diatas memberikan informasi statistik pada masing-masing kolom, antara lai
 - 50% adalah kuartil kedua, atau biasa juga disebut median (nilai tengah).
 - 75% adalah kuartil ketiga.
 - Max adalah nilai maksimum.
-
-| Jumlah Baris | Jumlah Kolom |
-|--------------|--------------|
-| 569          |31            |
-
-Dengan 569 Baris data dengan 31 Jumlah Kolom
 
 ### Exploratory Data Analysis - Missing Value, Duplikasi Data, dan Outlier
 
