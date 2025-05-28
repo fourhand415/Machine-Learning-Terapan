@@ -20,34 +20,232 @@ Sistem rekomendasi dalam bidang pariwisata berperan penting dalam membantu wisat
 
 Berdasarkan uraian yang telah dipaparkan pada latar belakang diatas, maka dapat diambil sebuah rumusan masalah yang dirumuskan sebagai berikut.
 - Bagaimana cara merekomendasikan tempat wisata yang sesuai dengan preferensi pengguna berdasarkan riwayat pencarian, ulasan, dan kategori wisata yang diminati?
-- Bagaimana cara meningkatkan visibilitas destinasi wisata yang kurang populer tetapi potensial?
+- Dengan menggunakan rating tempat wisata yang diberikan pengguna, bagaimana cara merekomendasikan ke pengguna?
+- Bagaimana cara membangun model sistem rekomendasi menggunakan pendekatan (content-based filtering) dengan Cosine Similiarity dan (Collaborative Filtering) model based Deep learning?
+- Bagaimana cara mengukur performa model sistem rekomendasi yang telah dibangun?
 
 ### Goals
 
 Berdasarkan rumusan masalah yang telah dipaparkan, maka tujuan penelitian sebagai berikut. 
-- Mengembangkan sistem rekomendasi wisata berbasis preferensi pengguna dengan memanfaatkan data historis, interaksi pengguna, ulasan, dan fitur dari destinasi. Ini bertujuan untuk memberikan rekomendasi yang lebih akurat dan personal.
-- Meningkatkan eksposur destinasi wisata kurang populer melalui strategi rekomendasi yang mempertimbangkan keseimbangan antara popularitas dan kesesuaian preferensi pengguna, sehingga mendukung pemerataan kunjungan wisata.
+- Menghasilkan rekomendasi tempat wisata sebanyak Top-N Rekomendasi kepada pengguna berdasarkan tempat yang dicari.
+- Menghasilkan rekomendasi tempat wisata yang sesuai dengan prefrensi pengguna sebelumnya.
+- Membangun model sistem rekomendasi menggunakan pendekatan (content-based filtering) dengan Cosine Similiarity dan (Collaborative Filtering) model based Deep learning berdasarkan fitur yang telah dipilih dari dataset.
+- Mengukur performa model sistem rekomendasi menggunakan metrik evaluasi yang sesuai.
 
 ### Solution Statements
 Berdasarkan tujuan yang telah dipaparkan, maka penelitian ini memiliki solusi sebagai berikut.
 - Content-Based Filtering
     - Sistem akan menganalisis atribut dari tempat wisata (misalnya kategori, lokasi, rating, dan kata kunci dari ulasan) dan mencocokkannya dengan preferensi pengguna berdasarkan riwayat interaksi. Pendekatan ini cocok untuk pengguna baru atau yang sudah memiliki preferensi tertentu.
-- Collaborative Filtering (User-Based atau Item-Based)
+- Collaborative Filtering
     - Sistem akan merekomendasikan tempat wisata berdasarkan kemiripan antar pengguna atau antar destinasi, berdasarkan pola interaksi. Metode ini memungkinkan sistem menemukan tempat yang disukai pengguna lain dengan profil yang mirip.
-
+- Pembangunan Model
+    - Model sistem rekomendasi dibangun dengan Content-Based Filtering dengan Cosine Similarity dan Colaborative Filtering dengan menggunakan model based Deep Learning.
+- Evaluasi Performa Model
+    - Evaluasi performa menggunakan Root Mean Squared Error yang akan memberikan wawasan tentang efektiviras model dalam merekomendasikan tempat wisata kepada pengguna.
 
 ## Data Understanding
-Paragraf awal bagian ini menjelaskan informasi mengenai jumlah data, kondisi data, dan informasi mengenai data yang digunakan. Sertakan juga sumber atau tautan untuk mengunduh dataset. Contoh: [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Restaurant+%26+consumer+data).
 
-Selanjutnya, uraikanlah seluruh variabel atau fitur pada data. Sebagai contoh:  
+Dataset yang digunakan dalam proyek ini adalah _Indonesia Tourism Destination_ yang tersedia di [Kaggle](https://www.kaggle.com/datasets/aprabowo/indonesia-tourism-destination). Dataset ini merupakan dataset yang berisi beberapa tempat wisata di 5 kota besar di Indonesia yaitu Jakarta, Yogyakarta, Semarang, Bandung, Surabaya.
 
-Variabel-variabel pada Restaurant UCI dataset adalah sebagai berikut:
-- accepts : merupakan jenis pembayaran yang diterima pada restoran tertentu.
-- cuisine : merupakan jenis masakan yang disajikan pada restoran.
-- dst
+### Informasi Datasets
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Melakukan beberapa tahapan yang diperlukan untuk memahami data, contohnya teknik visualisasi data beserta insight atau exploratory data analysis.
+| Jenis      | Keterangan                                                                       |
+|------------|----------------------------------------------------------------------------------|
+| Title      | Indonesia Tourism Destination                                                    |
+| Source     | [Kaggle](https://www.kaggle.com/datasets/aprabowo/indonesia-tourism-destination) |
+| Owner      | [A_Prabowo](https://www.kaggle.com/aprabowo)                                     |
+| License    | Data files © Original Authors                                                    |
+| Visibility | Publik                                                                           |
+| Tags       | Beginner, Travel, Asia, Recommender Systems                                      |
+| Usability  | 8.24                                                                             |
+
+Dataset yang digunakan dalam melakukan sistem rekomendasi adalah `tourism_rating.csv`, `tourism_with_id.csv`, dan `user.csv`. Informasi terkait ketiga dataset yang digunakan akan dibahas dibawah ini.
+
+Ketiga Variable yang digunakan diberikan nama agar mempermudah dengan kode sebagai berikut.
+```python
+# Menentukan Variable
+rating = pd.read_csv('tourism_rating.csv')
+info_tourism = pd.read_csv('tourism_with_id.csv')
+user = pd.read_csv('user.csv')
+```
+
+kemudian dilihat 5 data pertama dari masing-masing variable yang digunakan dengan kode sebagai berikut.
+
+1. `tourism_rating.csv` atau `rating`
+```python
+# Melihat 5 Data Pertama
+rating.head()
+```
+
+![image](https://github.com/user-attachments/assets/6c5b9341-c9f7-481d-a934-0b956d1359a3)
+
+dilihat dari hasil yang ada terdapat 3 fitur yaitu `User_Id`, `Place_Id`, dan `Place_Ratings`.
+
+2. `tourism_with_id.csv` atau `info_tourism`
+
+```python
+# Melihat 5 Data Pertama
+info_tourism.head()
+```
+
+![image](https://github.com/user-attachments/assets/8dfc4424-72e6-4d8e-8de7-a3832928b3c8)
+
+dilihat dari hasil yang ada terdapat 13 fitur yaitu `Place_Id`, `Place_Name`, `Description`, `Category`, `City`, `Price`, `Rating`, `Time_Minutes`, `Coordinate`, `Lat`, `Long`, `Unnamed: 11`, dan `Unnamed: 12`.
+
+3. `user.csv` atau `user`
+```python
+# Melihat 5 Data Pertama
+user.head()
+```
+
+![image](https://github.com/user-attachments/assets/d4d3d1e1-1893-4663-b36a-11663612b9ff)
+
+dilihat dari hasil yang ada terdapat 3 fitur yaitu `User_Id`, `Location`, dan `Age`.
+
+Dari ketiga dataset yang digunakan didapatkan Informasi Terkait Dataset dengan kode dan hasil sebagai berikut/.
+```python
+# Informasi Terkait Dataset
+print('Jumlah data penilaian tempat: ', len(rating.Place_Id.unique()))
+print('Jumlah data kota tempat: ', len(info_tourism.City.unique()))
+print('Jumlah data kategori tempat: ', len(info_tourism.Category.unique()))
+print('Jumlah data pengguna: ', len(user.User_Id.unique()))
+print('Jumlah data user yang memberikan rating penilaian tempat: ', len(rating.User_Id))
+```
+
+![image](https://github.com/user-attachments/assets/27a2f0b8-f621-4d27-8fd1-67ece8aee4f0)
+
+dilihat dari hasil yang ada didapatkan bahwa ada **437 penilaian tempat** yang terdapat di **5 kota** dengan **6 kategori**. Kemudian ada **300 pengguna** dengan **total 10000 rating penilaian tempat**.
+
+### _Exploratory Data Analysis_ (EDA)
+
+Kemudian dilakukan _Exploratory Data Analysis_ (EDA) yang merupakan proses untuk menganalisis dari variable yang akan digunakan.
+
+1. `tourism_rating.csv` atau `rating`
+
+Dengan menggunakan kode python sebagai berikut.
+```python
+# Melihat Informasi Variable
+rating.info()
+```
+didapatkan informasi yanng ditunjukkan pada tabel sebagai berikut.
+
+|#   |Column         |Non-Null Count  |Dtype  |
+|--- | ------        | -------------- | ----- | 
+| 0  | User_Id       | 10000 non-null | int64 | 
+| 1  | Place_Id      | 10000 non-null | int64 | 
+| 2  | Place_Ratings | 10000 non-null | int64 | 
+
+Variable `Rating` terdapat 10000 Baris dan 3 Kolom sebagai berikut.
+
+- User_Id = Kolom yang menunjukkan id dari setiap pengguna.
+- Place_Id = Kolom yang menunjukkan id dari setiap tempat wisata.
+- Place_Ratings = Kolom yang menunjukkan rating yang diberikan oleh pengguna pada tempat wisata tertentu.
+
+Kemudian dilakukan pengecekan Deskripsi dari Variable Rating yang menunjukkan hasil sebagai berikut.
+
+![image](https://github.com/user-attachments/assets/2a5f0115-791c-4882-b9bc-d45222f74d21)
+
+dilihat dari hasil yang ada didapatkan bahwa.
+
+- User_Id memiliki tepat 10000 id yang menunjukkan tidak adanya missing value dari fitur ini, kemudian ada 300 user yang ditunjukkan dari nilai MAX.
+- Place_Id memiliki tepat 10000 id yang menunjukkan tidak ada missing value dari fitur ini, kemudian  ada 437 user yang ditunjukkan dari nilai MAX.
+- Place_Ratings memiliki rating dimulai dari 1 hingga 5 dengan rata" rating dari 10000 data pada angka 3,066.
+
+Kemudian dilakukan Visualisasi Dari Variable Rating yang ditunjukkan sebagai berikut.
+
+```python
+# Distribusi Nilai Rating Tempat Wisata
+plt.figure(figsize=(8, 5))
+sns.histplot(rating['Place_Ratings'], bins=10)
+plt.title('Distribusi Nilai Rating Tempat Wisata')
+plt.xlabel('Rating')
+plt.ylabel('Jumlah')
+plt.show()
+```
+
+Dari Kode diatas didapatkan Visualisasi dari Distribusi Nilai Rating Tempat Wisata sebagai berikut.
+
+![image](https://github.com/user-attachments/assets/f70c50eb-7c4e-4cb0-833a-28f86e252f56)
+
+Dari visualisasi yang ada ditunjukkan bahwa **sebaran yang cukup merata** dengan Nilai rating 2 hingga 4 mendominasi distribusi dengan jumlah yang hampir setara. Kemudian **tidak terjadi bias signifikan terhadap rating tinggi atau rendah** dengan gambar histogram yang seimbang dari distribusinya.
+
+2. `tourism_with_id.csv` atau `info_tourism`
+
+Dengan menggunakan kode python sebagai berikut.
+```python
+# Melihat Informasi Variable
+info_tourism.info()
+```
+didapatkan informasi yanng ditunjukkan pada tabel sebagai berikut.
+
+|#   |Column        |Non-Null Count  |Dtype   |
+|--- | ------       | -------------- | -----  | 
+| 0  | Place_Id     | 437 non-null   | int64  | 
+| 1  | Place_Name   | 437 non-null   | object | 
+| 2  | Description  | 437 non-null   | object | 
+| 3  | Category     | 437 non-null   | object | 
+| 4  | City         | 437 non-null   | object | 
+| 5  | Price        | 437 non-null   | int64  | 
+| 6  | Rating       | 437 non-null   | float64|
+| 7  | Time_Minutes | 205 non-null   | float64|
+| 8  | Coordinate   | 437 non-null   | object |
+| 9  | Lat          | 437 non-null   | float64|
+| 10 | Long         | 437 non-null   | float64|
+| 11 | Unnamed: 11  | 0 non-null     | float64|
+| 12 | Unnamed: 12  | 437 non-null   | int64  |
+
+Variable `info_tourism` terdapat 437 Baris dan 13 Kolom sebagai berikut.
+
+- Place_Id = Kolom yang menunjukkan id dari setiap tempat wisata.
+- Place_Name = Kolom yang menunjukkan nama dari setiap tempat wisata.
+- Description = Kolom yang menunjukkan deskripsi dari setiap tempat wisata.
+- Category = Kolom yang menunjukkan kategori dari tempat wisata yang ada.
+- City = Kolom yang menunjukkan kota dari tempat wisata yang ada.
+- Price = Kolom yang menunjukkan harga masuk dari tempat wisata yang ada.
+- Rating = Kolom yang menunjukkan rating yang diberikan oleh pengguna pada tempat wisata tertentu.
+- Time_Minutes = Kolom yang menunjukkan waktu yang biasa dihabiskan untuk menelusuri tempat wisata.
+- Coordinate = Kolom yang menunjukkan koordinat dari setiap tempat wisata.
+- Lat = Kolom yang menunjukkan Latitude dari setiap tempat wisata.
+- Long = Kolom yang menunjukkan Longitude dari setiap tempat wisata.
+- Unnamed: 11 = Kolom kosong yang tidak digunakan pada proyek ini.
+- Unnamed: 12 = Kolom yang berisi angka 1 - 437 yang tidak digunakan pada proyek ini.
+
+kemudian dilakukan pengecekan macam kategori tempat dan macam kota yang terdapat pada dataset dengan kode dan hasil sebagai berikut.
+
+```python
+# Melihat macam kategori tempat
+print('Macam Kategori Tempat: ', info_tourism.Category.unique())
+```
+
+![image](https://github.com/user-attachments/assets/28a60ab9-c8b5-4b59-8e0b-b4aa6fdd7a0e)
+
+Dataset ini memiliki 6 Kategori Tempat yaitu : Budaya, Taman Hiburan, Cagar Alam, Bahari, Pusat Perbelanjaan, dan Tempat Ibadah.
+
+```python
+# Melihat kota pada dataset
+print('Kota: ', info_tourism.City.unique())
+```
+
+![image](https://github.com/user-attachments/assets/6bbec43f-67a0-47c0-9597-1606a4e9f5c4)
+
+Dataset ini memili 5 Macam Kota yaitu : Jakarta, Yogyakarta, Bandung, Semarang, dan Surabaya.
+
+
+
+3. `user.csv` atau `user`
+
+Dengan menggunakan kode python sebagai berikut.
+```python
+# Melihat Informasi Variable
+user.info()
+```
+didapatkan informasi yanng ditunjukkan pada tabel sebagai berikut.
+
+|#   |Column         |Non-Null Count  |Dtype   |
+|--- | ------        | -------------- | -----  | 
+| 0  | User_Id       | 300 non-null   | int64  | 
+| 1  | Locatiom      | 300 non-null   | object | 
+| 2  | Age           | 300 non-null   | int64  | 
 
 ## Data Preparation
 Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
