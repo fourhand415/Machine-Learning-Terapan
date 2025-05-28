@@ -230,7 +230,35 @@ print('Kota: ', info_tourism.City.unique())
 
 Dataset ini memili 5 Macam Kota yaitu : Jakarta, Yogyakarta, Bandung, Semarang, dan Surabaya.
 
+Kemudian dilakukan Visualisasi Dari Variable info_tourism yang ditunjukkan sebagai berikut.
 
+- Visualisasi Jumlah Tempat Wisata per Kategori
+
+```python
+# Jumlah Tempat Wisata per Kategori
+plt.figure(figsize=(10, 6))
+sns.countplot(data=info_tourism, y='Category', order=info_tourism['Category'].value_counts().index)
+plt.title('Jumlah Tempat Wisata per Kategori')
+plt.tight_layout()
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/05cb9883-155a-4833-94fd-18c72d1a97d9)
+
+Dari visualisasi diatas didapatkan bahwa Kategori Taman Hiburan memiliki jumlah paling banyak dari dataset ini kemudian disusul oleh Kategori Budaya dan cagar alam. Pusat perbelanjaan menjadi tempat wisata paling sedikit.
+
+- Visualisasi Jumlah Tempat Wisata per Kota
+
+```python
+# Jumlah Tempat Wisata per Kota
+plt.figure(figsize=(10, 6))
+sns.countplot(data=info_tourism, y='City', order=info_tourism['City'].value_counts().index)
+plt.title('Jumlah Tempat Wisata per Kota')
+plt.tight_layout()
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/7a2366ae-c89f-45d7-b4bb-d93767641a5a)
+
+Dari visualisasi diatas didapatkan bahwa Kota Yogyakarta dan Bandung memiliki jumlah paling banyak dan tidak terlalu jauh jumlahnya kemudian disusul oleh jakarta dan semarang. kota surabaya menjadi yang paling sedikit untuk tempat wisatanya.
 
 3. `user.csv` atau `user`
 
@@ -247,7 +275,126 @@ didapatkan informasi yanng ditunjukkan pada tabel sebagai berikut.
 | 1  | Locatiom      | 300 non-null   | object | 
 | 2  | Age           | 300 non-null   | int64  | 
 
+Variable `user` terdapat 300 Baris dan 3 Kolom sebagai berikut.
+
+- User_Id = Kolom yang menunjukkan id dari setiap pengguna.
+- Location = Kolom yang menunjukkan lokasi dari setiap tempat wisata.
+- Age = Kolom yang menunjukkan umur dari setiap pengguna.
+
+Variable user memiliki shape (300,3) yang didapatkan dari kode sebagai berikut.
+
+```python
+# Informasi Shape Variable
+print(user.shape)
+```
+
+Kemudian dilakukan Visualisasi Dari Variable user yang ditunjukkan sebagai berikut.
+
+- Visualisasi Distribusi Umur User
+
+```python
+# Distribusi Umur User
+plt.figure(figsize=(8, 5))
+sns.histplot(user['Age'], bins=20)
+plt.title('Distribusi Umur User')
+plt.xlabel('Umur')
+plt.ylabel('Jumlah')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/16e5c695-0d20-4fa1-8114-956197a34bc8)
+
+Dari visualisasi diatas didapatkan bahwa umur paling banyak berada pada umur 30 kemudian umur yang lain hampir sama rata.
+
+- Visualisasi 10 Lokasi Terbanyak
+
+ ```python
+# Visualisasi 10 Lokasi Terbanyak
+top_locations = user['Location'].value_counts().nlargest(10)
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x=top_locations.values, y=top_locations.index)
+plt.title('10 Lokasi Terbanyak')
+plt.xlabel('Jumlah User')
+plt.ylabel('Lokasi')
+plt.tight_layout()
+plt.show()
+```
+
+![image](https://github.com/user-attachments/assets/ff6ff8cd-6408-41a9-8d5c-f25b4a776c12)
+
+Dari visualisasi diatas didapatkan bahwa lokasi terbanyak dari user adalah Bekasi, Jawa barat. Kemudian hampir sama rata untuk variable lainnya dan yang paling sedikit adalah Ponorogo, Jawa Timur.
+
+- Visualisasi Boxplot Umur User
+
+```python
+# Boxplot Umur User
+plt.figure(figsize=(6, 2))
+sns.boxplot(x=user['Age'])
+plt.title('Boxplot Umur User')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/2e912adc-79c1-45f0-ac4f-34751ac7eea8)
+
+Dari visualisasi diatas didapatkan bahwa umur rata-rata berada di kurang dari 30 tahun, dengan batas bawah sekitar 24 tahun dan batas atas sekitar 34 tahun.
+
 ## Data Preparation
+
+Data Preparation dilakukan karena kita menggunakan beberapa dataset yang akan digunakan secara langsung dalam satu waktu, oleh karena itu kita perlu untuk menggabungkan dan memilih fitur-fitur yang akan digunakan sebelum masuk ke permodelan.
+
+Tahapan yang akan dilakukan adalah.
+
+- Data Preprocessing
+
+Data Preprocessing ini dilakukan dengan awalnya menggabungkan variable `info_tourism` dan `rating` yang akhirnya menjadi `tourism_all` dengan kode sebagai berikut.
+
+```python
+# Menggabungkan Info_Tourism dengan Rating
+tourism_all = np.concatenate((
+    info_tourism.Place_Id.unique(),
+    rating.Place_Id.unique()
+))
+
+tourism_all = np.sort(np.unique(tourism_all))
+
+print('Total jumlah turis: ', len(tourism_all))
+```
+kemudian mendapatkan hasil sebagai berikut.
+
+![image](https://github.com/user-attachments/assets/f2fca362-b148-4d47-ba45-dc7dad774e14)
+
+Kemudian merubah nama `rating` menjadi `all_tourism_rate` dengan kode sebagai berikut.
+
+```python
+# Mengubah Nama Rating menjadi all_tourism_rate
+all_tourism_rate = rating
+all_tourism_rate
+```
+kemudian menggabungkan beberapa informasi (fitur) dari `info_tourism` dengan `all_tourism_rate` menjadi `all_tourism` dengan code dan hasil sebagai berikut.
+
+```python
+# Menggabungkan all_tourism_rate dengan beberapa informasi dari tourism
+all_tourism = pd.merge(all_tourism_rate, info_tourism[['Place_Id','Place_Name','Description','City','Category']],on='Place_Id', how='left')
+all_tourism
+```
+
+![image](https://github.com/user-attachments/assets/294164c4-7ba2-4dd6-9781-6b8dc088998b)
+
+kemudian menambahkan fitur city_category yang merupakan gabungan dari kota dan kategori ke `all_tourism` dengan kode dan hasil sebagai berikut sebagai berikut.
+
+```python
+# Menambahkan fitur city_category ke all_tourism
+all_tourism['city_category'] = all_tourism[['City','Category']].agg(' '.join,axis=1)
+```
+
+![image](https://github.com/user-attachments/assets/bc10501a-45db-4f3c-a21f-0d3bde18ba3d)
+
+untuk sementara `all_tourism` yang akan dilakukan pengecekan missing value dan duplikasi.
+
+- Cek Missing Value
+  
+- Cek Duplikasi Data
+- TF-IDF Vectorizer
+
 Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
 
 **Rubrik/Kriteria Tambahan (Opsional)**: 
